@@ -3,9 +3,10 @@ import { StyleSheet, Alert, Modal, ScrollView } from "react-native";
 import { TextInput, Text, Card, Button } from "react-native-paper";
 import { SelectList } from "react-native-dropdown-select-list";
 import shortid from "react-id-generator";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export function Formulario({ automoviles, setAutomoviles, setAutomovilStorage }) {
+
 
     const [nombre, setNombre] = useState('');
     const [tipo, setTipo] = useState('');
@@ -19,6 +20,16 @@ export function Formulario({ automoviles, setAutomoviles, setAutomovilStorage })
     const [pago, setPago] = useState(0.0);
     //Costo base del servicio seleccionado
     const [costo, setCosto] = useState(0.0);
+
+
+    useEffect(() => {
+        obtenerCostoBase(servicio, tipo);
+    }, [tipo]);
+
+    useEffect(() => {
+        calcularPago(costo, impuesto, propina);
+    }, [costo, impuesto, propina]);
+
 
     const [modalVisible, setModalVisible] = useState(false);
 
@@ -57,8 +68,8 @@ export function Formulario({ automoviles, setAutomoviles, setAutomovilStorage })
 
         if (nombre == '' || tipo == '' ||
             placa == '' || color == '' ||
-            anio == '' || marca == ''||
-            servicio=='') {
+            anio == '' || marca == '' ||
+            servicio == '') {
             Alert.alert(
                 'Error',
                 'Todos los campos son obligatorios',
@@ -66,108 +77,114 @@ export function Formulario({ automoviles, setAutomoviles, setAutomovilStorage })
                     text: 'OK'
                 }]
             )
+            limpiarCampos();
             return;
         }
 
-        //Metodo para setear costo
-        obtenerCostoBase(servicio,tipo);
-        //Metodo para setar propina
-        calcularPropina(costo);
-        calcularImpuesto(costo);
-        const pagoTemp= (costo + propina + impuesto).toFixed(2);
-        setPago(pagoTemp);
+        
+        if (servicio == 'Polarizado' && tipo == 'Motocicleta') {
+            Alert.alert(
+                'Aviso',
+                'El servicio de polarizado no aplica a motocicletas',
+                [{
+                    text: 'OK'
+                }]
+            )
+            limpiarCampos();
+            return;
+        } else {
+            obtenerCostoBase(servicio, tipo);
+            calcularPago(costo, impuesto, propina);
 
-        const Auto = { nombre, tipo, placa, color, anio,servicio, marca,costo,propina,impuesto,pago};
-        Auto.id = shortid();
 
-        const nuevoAuto = [...automoviles, Auto];
+            const Auto = { nombre, tipo, placa, color, anio, servicio, marca, costo, propina, impuesto, pago };
+            Auto.id = shortid();
 
-        setAutomoviles(nuevoAuto);
-        setAutomovilStorage(JSON.stringify(nuevoAuto));
+            const nuevoAuto = [...automoviles, Auto];
 
+            setAutomoviles(nuevoAuto);
+            setAutomovilStorage(JSON.stringify(nuevoAuto));
+
+            limpiarCampos();
+
+            setModalVisible(!modalVisible);
+            console.log("Se ha registrado un auto");
+        }
+
+    }
+
+    const limpiarCampos = () => {
         setNombre('');
         setServicio('');
+        setTipo('');
         setMarca('');
         setAnio('');
-        setColor('');
-        setTipo('');
         setPlaca('');
-        setCosto(0);
-        setPropina(0);
-        setImpuesto(0);
-        setPago(0);
-
-        setModalVisible(!modalVisible);
-        console.log("Se ha registrado un auto");
+        setColor('');
+        setCosto(0.0);
+        setImpuesto(0.0);
+        setPropina(0.0);
+        setPago(0.0);
     }
 
     const obtenerCostoBase = (servicio, tipo) => {
-        var costoBase = 0;
-        console.log("Servicio seleccionado: "+servicio);
-        console.log("Tipo de auto: "+tipo);
+        let costoBase = 0
+
+        console.log("Servicio seleccionado: " + servicio);
+        console.log("Tipo de auto: " + tipo);
         if (servicio === 'Lavado Básico') {
             if (tipo === 'Motocicleta') { costoBase = 2; }
-            if (tipo === 'Sedán') { costoBase = 3; }
-            if (tipo === 'Camioneta') { costoBase = 4; }
-            if (tipo === 'Microbús') { costoBase = 5; }
-            if (tipo === 'Bus') { costoBase = 6 }
-        }
-        if (servicio === 'Lavado Premium') {
+            else if (tipo === 'Sedán') { costoBase = 3; }
+            else if (tipo === 'Camioneta') { costoBase = 4; }
+            else if (tipo === 'Microbús') { costoBase = 5; }
+            else if (tipo === 'Bus') { costoBase = 6 }
+        } else if (servicio === 'Lavado Premium') {
             if (tipo === 'Motocicleta') { costoBase = 2.5; }
-            if (tipo === 'Sedán') { costoBase = 3.5; }
-            if (tipo === 'Camioneta') { costoBase = 4.5; }
-            if (tipo === 'Microbús') { costoBase = 5.5; }
-            if (tipo === 'Bus') { costoBase = 6.5 }
+            else if (tipo === 'Sedán') { costoBase = 3.5; }
+            else if (tipo === 'Camioneta') { costoBase = 4.5; }
+            else if (tipo === 'Microbús') { costoBase = 5.5; }
+            else if (tipo === 'Bus') { costoBase = 6.5 }
         }
-        if (servicio === 'Lavado VIP') {
+        else if (servicio === 'Lavado VIP') {
             if (tipo === 'Motocicleta') { costoBase = 3; }
-            if (tipo === 'Sedán') { costoBase = 4; }
-            if (tipo === 'Camioneta') { costoBase = 5; }
-            if (tipo === 'Microbús') { costoBase = 6; }
-            if (tipo === 'Bus') { costoBase = 7 }
+            else if (tipo === 'Sedán') { costoBase = 4; }
+            else if (tipo === 'Camioneta') { costoBase = 5; }
+            else if (tipo === 'Microbús') { costoBase = 6; }
+            else if (tipo === 'Bus') { costoBase = 7 }
         }
-        if (servicio === 'Polarizado') {
-            if (tipo === 'Motocicleta') {
-                Alert.alert(
-                    'Aviso',
-                    'El servicio de polarizado no aplica a motocicletas',
-                    [{
-                        text: 'OK'
-                    }]
-                )
-                setNombre('');
-                setServicio('');
-                setMarca('');
-                setAnio('');
-                setColor('');
-                setTipo('');
-                setPlaca('');
-                return;
-            }
+        else if (servicio === 'Polarizado') {
             if (tipo === 'Sedán') { costoBase = 25; }
-            if (tipo === 'Camioneta') { costoBase = 35; }
-            if (tipo === 'Microbús') { costoBase = 45; }
-            if (tipo === 'Bus') { costoBase = 60 }
+            else if (tipo === 'Camioneta') { costoBase = 35; }
+            else if (tipo === 'Microbús') { costoBase = 45; }
+            else if (tipo === 'Bus') { costoBase = 60 }
         }
-        console.log("Costo base es de: "+costoBase);
-        costoBase= costoBase.toFixed(2);
-        setCosto(costoBase);
-        console.log("Costo en state es de: "+costo);
+        const costoBaseTemp = costoBase.toFixed(2);
+        
+        setCosto(costoBaseTemp, console.log("Costo en state actual es de: " + costo));
+
+        calcularPropina(costoBaseTemp);
+        calcularImpuesto(costoBaseTemp);
     }
 
     //Revisar calculos
     const calcularPropina = (costoBase) => {
         var propinaTemp = 0;
-        propinaTemp=(costoBase*0.05).toFixed(2);
+        propinaTemp = (costoBase * 0.05).toFixed(2);
 
         setPropina(propinaTemp);
-       
     }
 
-    const calcularImpuesto=(costoBase)=>{
-        var impuestoTemp=0;
-        impuestoTemp=(costoBase*0.13).toFixed(2);
+    const calcularImpuesto = (costoBase) => {
+        var impuestoTemp = 0;
+        impuestoTemp = (costoBase * 0.13).toFixed(2);
         setImpuesto(impuestoTemp);
+    }
+
+    const calcularPago = (costoBase, impuesto, propina) => {
+        var pagoTemp = 0;
+        pagoTemp = parseFloat(costoBase) + parseFloat(impuesto) + parseFloat(propina);
+        pagoTemp = pagoTemp.toFixed(2);
+        setPago(pagoTemp);
     }
 
     return (
@@ -239,7 +256,7 @@ export function Formulario({ automoviles, setAutomoviles, setAutomovilStorage })
                 </View>
             </Modal>
 
-            <Button style={{ marginVertical: 25 }} mode="elevated" onPress={() => { setModalVisible(!modalVisible) }}>Registrar Automovil</Button>
+            <Button style={{ marginVertical: 25 }} mode="elevated" onPress={() => { setModalVisible(!modalVisible) }}>Registrar Servicio</Button>
         </View>
     );
 }

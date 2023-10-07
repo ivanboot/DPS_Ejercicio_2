@@ -34,17 +34,17 @@ export function ListadoClientes({ item }) {
                 </DataTable.Row>
                 <DataTable.Row>
                     <DataTable.Cell><Text style={styles.label}>Costo servicio:</Text></DataTable.Cell>
-                    <DataTable.Cell><Text style={styles.texto}>{item.costo}</Text></DataTable.Cell>
+                    <DataTable.Cell><Text style={styles.texto}>${item.costo}</Text></DataTable.Cell>
                 </DataTable.Row>
                 <DataTable.Row>
                 <DataTable.Cell><Text style={styles.label}>Propina:</Text></DataTable.Cell>
-                    <DataTable.Cell><Text style={styles.texto}>{item.propina}</Text></DataTable.Cell>
+                    <DataTable.Cell><Text style={styles.texto}>${item.propina}</Text></DataTable.Cell>
                     <DataTable.Cell><Text style={styles.label}>Impuesto:</Text></DataTable.Cell>
-                    <DataTable.Cell><Text style={styles.texto}>{item.impuesto}</Text></DataTable.Cell>
+                    <DataTable.Cell><Text style={styles.texto}>${item.impuesto}</Text></DataTable.Cell>
                 </DataTable.Row>
                 <DataTable.Row>
                 <DataTable.Cell><Text style={styles.label}>Pago Total:</Text></DataTable.Cell>
-                    <DataTable.Cell><Text style={styles.texto}>{item.pago}</Text></DataTable.Cell>
+                    <DataTable.Cell><Text style={styles.texto}>${item.pago}</Text></DataTable.Cell>
                 </DataTable.Row>
 
             </Card.Content>
@@ -55,7 +55,7 @@ export function ListadoClientes({ item }) {
 const styles = StyleSheet.create({
     container: {
 
-        marginVertical: 25,
+        marginVertical: 10,
         backgroundColor: '#FAF3F0',
     },
     cita: {
@@ -75,15 +75,5 @@ const styles = StyleSheet.create({
         fontSize: 18,
         width: 'auto'
     },
-    btnEliminar: {
-        padding: 10,
-        backgroundColor: 'red',
-        marginVertical: 10
-    },
-    textoEliminar: {
-        color: '#FFF',
-        fontWeight: 'bold',
-        textAlign: 'center'
-    }
 });
 
