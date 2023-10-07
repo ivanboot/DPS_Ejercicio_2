@@ -155,6 +155,7 @@ export function Formulario({ automoviles, setAutomoviles, setAutomovilStorage })
         console.log("Costo en state es de: "+costo);
     }
 
+    //Revisar calculos
     const calcularPropina = (costoBase) => {
         var propinaTemp = 0;
         propinaTemp=(costoBase*0.05).toFixed(2);
